@@ -21,7 +21,14 @@ extern int L5_COORDS_KEY;
 extern int L5_TYPE_KEY;
 extern int L5_TRANS_MODE_KEY;
 extern int LOCATION_NAME_KEY;
-extern int SUMMARY_DISTANCE_KEY;
-extern int SUMMARY_TRAFFIC_TIME_KEY;
-extern int SUMMARY_BASE_TIME_KEY;
-extern int SUMMARY_TRAVEL_TIME_KEY;
+extern int LOCATION_DISTANCE_KEY;
+extern int DISTANCE_CONVERSION_KEY;
+extern int TRAFFIC_TIME_MINUTES_KEY;
+extern int TRAFFIC_TIME_HOURS_KEY;
+extern int BASE_TIME_MINUTES_KEY;
+extern int BASE_TIME_HOURS_KEY;
+extern int ROUTING_TYPE_KEY;
+extern int TRANSPORT_MODE_KEY;
+
+extern int LOCATIONS_KEY;
+extern int TRAVELTIME_KEY;

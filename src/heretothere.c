@@ -1,5 +1,5 @@
 #include <pebble.h>
-#include "menu.h"
+#include "appmessage.h"
 #include "locations.h"
 #include "traveltime.h"
 
@@ -26,28 +26,31 @@ int L5_COORDS_KEY = 31;
 int L5_TYPE_KEY = 32;
 int L5_TRANS_MODE_KEY = 33;
 int LOCATION_NAME_KEY = 49;
-int SUMMARY_DISTANCE_KEY = 50;
-int SUMMARY_TRAFFIC_TIME_KEY = 51;
-int SUMMARY_BASE_TIME_KEY = 52;
-int SUMMARY_TRAVEL_TIME_KEY = 53;
+int LOCATION_DISTANCE_KEY = 50;
+int DISTANCE_CONVERSION_KEY = 51;
+int TRAFFIC_TIME_MINUTES_KEY = 52;
+int TRAFFIC_TIME_HOURS_KEY = 53;
+int BASE_TIME_MINUTES_KEY = 54;
+int BASE_TIME_HOURS_KEY = 55;
+int ROUTING_TYPE_KEY = 56;
+int TRANSPORT_MODE_KEY = 57;
+
+int LOCATIONS_KEY = 60;
+int TRAVELTIME_KEY = 61;
 
 static void init(void){
-	menu_init();
+	appmessage_init();
 	locations_init();
 	traveltime_init();
 }
 
 static void deinit(void){
-	menu_deinit();
 	locations_deinit();
 	traveltime_deinit();
 }
 
 int main(void){
 	init();
-	int inboxMaxSize = app_message_inbox_size_maximum();
-	int outboxMaxSize = app_message_outbox_size_maximum();
-	app_message_open(inboxMaxSize, outboxMaxSize);
 	
 	app_event_loop();
 	deinit();

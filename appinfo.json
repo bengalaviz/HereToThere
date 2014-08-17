@@ -32,12 +32,30 @@
     "l5_type": 32,
     "l5_trans_mode" : 33,
     "location_name" : 49,
-    "summary_distance" : 50,
-    "summary_traffic_time" : 51,
-    "summary_base_time" : 52,
-    "summary_travel_time" : 53
+    "location_distance" : 50,
+    "distance_conversion" : 51,
+    "traffic_time_minutes" : 52,
+    "traffic_time_hours": 53,
+    "base_time_minutes" : 54,
+    "base_time_hours" : 55,
+    "routing_type" : 56,
+    "transport_mode" : 57,
+    "locations" : 60,
+    "traveltime" : 61
   },
   "resources": {
-    "media": []
+    "media": [
+    	{
+    		"menuIcon":true,
+    		"type":"png",
+    		"name":"IMAGE_MENU_ICON",
+    		"file":"img/menu-icon.png"
+    	},
+    	{
+    		"type":"png",
+    		"name":"IMAGE_REFRESH",
+    		"file":"img/no_litter.png"
+    	}
+    ]
   }
 }
