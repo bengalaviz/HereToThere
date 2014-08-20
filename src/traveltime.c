@@ -3,6 +3,8 @@
 #include "locations.h"
 
 static Window *traveltime_window;
+static GBitmap *res_refresh;
+static BitmapLayer *refresh_bitmap_layer;
 static GFont s_res_bitham_34_medium_numbers;
 static GFont s_res_gothic_14;
 static GFont s_res_gothic_18;
@@ -20,8 +22,10 @@ static TextLayer *tt_tm_layer;
 static TextLayer *tt_tm_label_layer;
 static TextLayer *tt_location_layer;
 static int location_num;
+static int tuplet_count;
 
 static void get_time_to_location(void){
+	tuplet_count = 0;
 	Tuplet requestType = TupletInteger(QUERY_TYPE_KEY, location_num);
 	DictionaryIterator *iter;
 	app_message_outbox_begin(&iter);
@@ -31,6 +35,18 @@ static void get_time_to_location(void){
 	dict_write_tuplet(iter, &requestType);
 	dict_write_end(iter);
 	app_message_outbox_send();
+}
+
+static void splash_show(){
+	res_refresh = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_REFRESH);
+	refresh_bitmap_layer = bitmap_layer_create(GRect(0, 0, 144, 152));
+	bitmap_layer_set_bitmap(refresh_bitmap_layer, res_refresh);
+	layer_add_child(window_get_root_layer(traveltime_window), (Layer *)refresh_bitmap_layer);
+}
+
+static void splash_hide(){
+	bitmap_layer_destroy(refresh_bitmap_layer);
+	gbitmap_destroy(res_refresh);
 }
 
 void traveltime_out_sent_handler(DictionaryIterator *sent){
@@ -50,31 +66,47 @@ void traveltime_in_received_handler(DictionaryIterator *iter){
 	Tuple *transport_mode = dict_find(iter, TRANSPORT_MODE_KEY);
 	
 	if (location_name){
+		tuplet_count++;
 		text_layer_set_text(tt_location_layer, location_name->value->cstring);
 	}
 	
 	if (traffic_time_hours){
+		tuplet_count++;
 		text_layer_set_text(tt_hours_layer, traffic_time_hours->value->cstring);
+		text_layer_set_text(tt_hours_label_layer, "hrs");
 	}
 	
 	if (traffic_time_minutes){
+		tuplet_count++;
 		text_layer_set_text(tt_minutes_layer, traffic_time_minutes->value->cstring);
+		text_layer_set_text(tt_minutes_label_layer, "mins");
 	}
 	
 	if (distance){
+		tuplet_count++;
 		text_layer_set_text(tt_distance_layer, distance->value->cstring);
+		text_layer_set_text(tt_distance_label_layer, "Distance :");
 	}
 	
 	if (distance_conversion){
+		tuplet_count++;
 		text_layer_set_text(tt_dc_layer, distance_conversion->value->cstring);
 	}
 	
 	if (routing_type){
+		tuplet_count++;
 		text_layer_set_text(tt_rt_layer, routing_type->value->cstring);
+		text_layer_set_text(tt_routing_label_layer, "Routing Type :");
 	}
 	
 	if (transport_mode){
+		tuplet_count++;
 		text_layer_set_text(tt_tm_layer, transport_mode->value->cstring);
+		text_layer_set_text(tt_tm_label_layer, "Transport Mode :");
+	}
+	
+	if (tuplet_count > 6){
+		splash_hide();
 	}
 }
 
@@ -98,7 +130,6 @@ static void window_load(Window *window){
   	// tt_hours_layer
   	tt_hours_layer = text_layer_create(GRect(0, 25, 59, 37));
   	text_layer_set_background_color(tt_hours_layer, GColorClear);
-  	//text_layer_set_text(tt_hours_layer, "199");
   	text_layer_set_text_alignment(tt_hours_layer, GTextAlignmentRight);
   	text_layer_set_font(tt_hours_layer, s_res_bitham_34_medium_numbers);
   	layer_add_child(window_layer, (Layer *)tt_hours_layer);
@@ -106,35 +137,30 @@ static void window_load(Window *window){
   	// tt_hours_label_layer
   	tt_hours_label_layer = text_layer_create(GRect(60, 20, 29, 20));
   	text_layer_set_background_color(tt_hours_label_layer, GColorClear);
-  	text_layer_set_text(tt_hours_label_layer, "hrs");
   	text_layer_set_font(tt_hours_label_layer, s_res_gothic_14);
   	layer_add_child(window_layer, (Layer *)tt_hours_label_layer);
   
   	// tt_minutes_layer
   	tt_minutes_layer = text_layer_create(GRect(75, 25, 42, 34));
   	text_layer_set_background_color(tt_minutes_layer, GColorClear);
-  	//text_layer_set_text(tt_minutes_layer, "59");
   	text_layer_set_font(tt_minutes_layer, s_res_bitham_34_medium_numbers);
   	layer_add_child(window_layer, (Layer *)tt_minutes_layer);
   
   	// tt_minutes_label_layer
   	tt_minutes_label_layer = text_layer_create(GRect(117, 20, 29, 20));
   	text_layer_set_background_color(tt_minutes_label_layer, GColorClear);
-  	text_layer_set_text(tt_minutes_label_layer, "mins");
   	text_layer_set_font(tt_minutes_label_layer, s_res_gothic_14);
   	layer_add_child(window_layer, (Layer *)tt_minutes_label_layer);
   
   	// tt_distance_label_layer
   	tt_distance_label_layer = text_layer_create(GRect(5, 64, 138, 18));
   	text_layer_set_background_color(tt_distance_label_layer, GColorClear);
-  	text_layer_set_text(tt_distance_label_layer, "Distance :");
   	text_layer_set_font(tt_distance_label_layer, s_res_gothic_14_bold);
   	layer_add_child(window_layer, (Layer *)tt_distance_label_layer);
   
   	// tt_distance_layer
   	tt_distance_layer = text_layer_create(GRect(6, 75, 115, 18));
   	text_layer_set_background_color(tt_distance_layer, GColorClear);
-  	//text_layer_set_text(tt_distance_layer, "99999999999999.99");
   	text_layer_set_text_alignment(tt_distance_layer, GTextAlignmentRight);
   	text_layer_set_font(tt_distance_layer, s_res_gothic_18);
   	layer_add_child(window_layer, (Layer *)tt_distance_layer);
@@ -142,14 +168,12 @@ static void window_load(Window *window){
   	// tt_routing_label_layer
   	tt_routing_label_layer = text_layer_create(GRect(5, 91, 138, 20));
   	text_layer_set_background_color(tt_routing_label_layer, GColorClear);
-  	text_layer_set_text(tt_routing_label_layer, "Routing Type :");
   	text_layer_set_font(tt_routing_label_layer, s_res_gothic_14_bold);
   	layer_add_child(window_layer, (Layer *)tt_routing_label_layer);
   
   	// tt_dc_layer
   	tt_dc_layer = text_layer_create(GRect(121, 76, 19, 18));
   	text_layer_set_background_color(tt_dc_layer, GColorClear);
-  	//text_layer_set_text(tt_dc_layer, "km");
   	text_layer_set_text_alignment(tt_dc_layer, GTextAlignmentRight);
   	text_layer_set_font(tt_dc_layer, s_res_gothic_18);
   	layer_add_child(window_layer, (Layer *)tt_dc_layer);
@@ -157,7 +181,6 @@ static void window_load(Window *window){
   	// tt_rt_layer
   	tt_rt_layer = text_layer_create(GRect(5, 103, 135, 20));
   	text_layer_set_background_color(tt_rt_layer, GColorClear);
-  	//text_layer_set_text(tt_rt_layer, "9999999999999999999");
   	text_layer_set_text_alignment(tt_rt_layer, GTextAlignmentRight);
   	text_layer_set_font(tt_rt_layer, s_res_gothic_18);
   	layer_add_child(window_layer, (Layer *)tt_rt_layer);
@@ -165,7 +188,6 @@ static void window_load(Window *window){
   	// tt_tm_layer
   	tt_tm_layer = text_layer_create(GRect(5, 130, 135, 20));
   	text_layer_set_background_color(tt_tm_layer, GColorClear);
-  	//text_layer_set_text(tt_tm_layer, "9999999999999999999");
   	text_layer_set_text_alignment(tt_tm_layer, GTextAlignmentRight);
   	text_layer_set_font(tt_tm_layer, s_res_gothic_18);
   	layer_add_child(window_layer, (Layer *)tt_tm_layer);
@@ -173,7 +195,6 @@ static void window_load(Window *window){
   	// tt_tm_label_layer
   	tt_tm_label_layer = text_layer_create(GRect(5, 119, 138, 20));
   	text_layer_set_background_color(tt_tm_label_layer, GColorClear);
-  	text_layer_set_text(tt_tm_label_layer, "Transport Mode :");
   	text_layer_set_font(tt_tm_label_layer, s_res_gothic_14_bold);
   	layer_add_child(window_layer, (Layer *)tt_tm_label_layer);
   
@@ -185,6 +206,7 @@ static void window_load(Window *window){
   	text_layer_set_font(tt_location_layer, s_res_gothic_18);
   	layer_add_child(window_layer, (Layer *)tt_location_layer);
 	
+	splash_show();
 	get_time_to_location();
 }
 
