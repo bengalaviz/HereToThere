@@ -4,7 +4,7 @@
   "longName": "Here To There",
   "companyName": "Benjamin Galaviz",
   "versionCode": 1,
-  "versionLabel": "1.0.0",
+  "versionLabel": "0.1.0",
   "capabilities":["configurable","location"],
   "watchapp": {
     "watchface": false
