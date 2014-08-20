@@ -4,7 +4,6 @@
 
 static Window *locations_window;
 static MenuLayer *location_layer;
-static char cell_index_num[2];
 
 struct location_data {
 	char *location_name;
@@ -13,10 +12,9 @@ struct location_data {
 struct location_data ld_array[5];
 
 static void get_locations(void){
-	APP_LOG(APP_LOG_LEVEL_DEBUG,"get_locations");
 	ld_array[0].location_name = "Getting locations";
 	layer_mark_dirty(menu_layer_get_layer(location_layer));
-	Tuplet requestType = TupletCString(QUERY_TYPE_KEY, "getLocations");
+	Tuplet requestType = TupletInteger(QUERY_TYPE_KEY, 0);
 	DictionaryIterator *iter;
 	app_message_outbox_begin(&iter);
 	if (iter == NULL){
@@ -28,8 +26,6 @@ static void get_locations(void){
 }
 
 void locations_out_sent_handler(DictionaryIterator *sent){
-	// outgoind message was delivered
-	APP_LOG(APP_LOG_LEVEL_DEBUG,"out sent handler");
 }
 
 void locations_out_failed_handler(DictionaryIterator *failed, AppMessageResult reason){
@@ -39,17 +35,14 @@ void locations_out_failed_handler(DictionaryIterator *failed, AppMessageResult r
 }
 
 void locations_in_received_handler(DictionaryIterator *iter){
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "in_received_handler");
 	Tuple *l1_text = dict_find(iter, L1_TEXT_KEY);
 	if (l1_text){
 		ld_array[0].location_name = l1_text->value->cstring;
-		//persist_write_string(L1_NAME_KEY, l1_text->value->cstring);
 	}
 	
 	Tuple *l2_text = dict_find(iter, L2_TEXT_KEY);
 	if (l2_text){
 		ld_array[1].location_name = l2_text->value->cstring;
-		//persist_write_string(L2_NAME_KEY, l2_text->value->cstring);
 	}
 	
 	Tuple *l3_text = dict_find(iter, L3_TEXT_KEY);
@@ -102,20 +95,16 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data){
 	switch (cell_index->section){
 		case 0:
-			snprintf(cell_index_num, sizeof(cell_index_num), "%u", cell_index->row);
-			
-			APP_LOG(APP_LOG_LEVEL_DEBUG, "%d", cell_index->row);
 			if (strcmp(ld_array[cell_index->row].location_name, "") == 0){
 			
 			}else{
-				traveltime_show(cell_index_num);
+				traveltime_show(cell_index->row);
 			}
 			break;
 	}
 }
 
 static void window_load(Window *window){
-	APP_LOG(APP_LOG_LEVEL_DEBUG,"window_load");
 	Layer *window_layer = window_get_root_layer(locations_window);
 	
 	int num_items=0;
@@ -142,7 +131,6 @@ static void window_load(Window *window){
 	
 	menu_layer_set_click_config_onto_window(location_layer, window);
 	layer_add_child(window_layer, menu_layer_get_layer(location_layer));
-	get_locations();
 }
 
 static void window_appear(Window *window){
@@ -155,12 +143,10 @@ static void window_appear(Window *window){
 }
 
 static void window_unload(Window *window){
-	APP_LOG(APP_LOG_LEVEL_DEBUG,"window_unload");
 	menu_layer_destroy(location_layer);
 }
 
 void locations_init(void){
-	APP_LOG(APP_LOG_LEVEL_DEBUG,"locations_init");
 	locations_window = window_create();
 	
 	window_set_window_handlers(locations_window, (WindowHandlers){

@@ -19,18 +19,10 @@ static TextLayer *tt_rt_layer;
 static TextLayer *tt_tm_layer;
 static TextLayer *tt_tm_label_layer;
 static TextLayer *tt_location_layer;
-static char *location_num;
-
-struct location_data{
-	char *tt_hours;
-	char *tt_minutes;
-};
-
-struct location_data locat_data;
+static int location_num;
 
 static void get_time_to_location(void){
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "get_time_to_location");
-	Tuplet requestType = TupletCString(QUERY_TYPE_KEY, location_num);
+	Tuplet requestType = TupletInteger(QUERY_TYPE_KEY, location_num);
 	DictionaryIterator *iter;
 	app_message_outbox_begin(&iter);
 	if (iter == NULL){
@@ -41,14 +33,7 @@ static void get_time_to_location(void){
 	app_message_outbox_send();
 }
 
-static void update_screen(void){
-	text_layer_set_text(tt_hours_layer, locat_data.tt_hours);
-	text_layer_set_text(tt_minutes_layer, locat_data.tt_minutes);
-}
-
 void traveltime_out_sent_handler(DictionaryIterator *sent){
-	//outgoing message was delivered
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "traveltime_out_send_handler");
 }
 
 void traveltime_out_failed_handler(DictionaryIterator *falied, AppMessageResult reason){
@@ -91,8 +76,6 @@ void traveltime_in_received_handler(DictionaryIterator *iter){
 	if (transport_mode){
 		text_layer_set_text(tt_tm_layer, transport_mode->value->cstring);
 	}
-	
-	//update_screen();
 }
 
 static void select_click_handler(ClickRecognizerRef recognizer, Window *window){
@@ -220,10 +203,8 @@ static void window_unload(Window *window){
   	text_layer_destroy(tt_location_layer);
 }
 
-void traveltime_show(char *location){
-	location_num = location;
-	locat_data.tt_hours = "99";
-	locat_data.tt_minutes = "59";
+void traveltime_show(int location){
+	location_num = location + 1;
 	window_stack_push(traveltime_window, true);
 }
 

@@ -68,23 +68,23 @@ function fetchHereToThere(latitude, longitude){
 	var req = new XMLHttpRequest();
 	var dest_coords ='';
 	switch (destination){
-		case 0:
+		case 1:
 			dest_coords = l1_coords;
 			location_name = l1_text;
 			break;
-		case 1:
+		case 2:
 			dest_coords = l2_coords;
 			location_name = l2_text;
 			break;
-		case 2:
+		case 3:
 			dest_coords = l3_coords;
 			location_name = l3_text;
 			break;
-		case 3:
+		case 4:
 			dest_coords = l4_coords;
 			location_name = l4_text;
 			break;
-		case 4:
+		case 5:
 			dest_coords = l5_coords;
 			location_name = l5_text;
 			break;
@@ -244,30 +244,26 @@ Pebble.addEventListener("appmessage", function(e){
 	
 	console.log("Pull Type : " + pullType);
 	
-	if (pullType == 'getLocations'){
+	if (pullType == 0){
 		console.log("getting location");
 		getAllLocations();
-	}else if (pullType == '0'){
-		console.log("getting location 0 stats");
-		destination = 0;
-		window.navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
-	}else if (pullType == '1'){
+	}else if (pullType == 1){
 		console.log("getting location 1 stats");
 		destination = 1;
 		window.navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
-	}else if (pullType == '2'){
+	}else if (pullType == 2){
 		console.log("getting location 2 stats");
 		destination = 2;
 		window.navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);	
-	}else if (pullType == '3'){
+	}else if (pullType == 3){
 		console.log("getting location 3 stats");
 		destination = 3;
 		window.navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
-	}else if (pullType == '4'){
+	}else if (pullType == 4){
 		console.log("getting location 4 stats");
 		destination = 4;
 		window.navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
-	}else if (pullType == '5'){
+	}else if (pullType == 5){
 		console.log("getting location 5 stats");
 		destination = 5;
 		window.navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
