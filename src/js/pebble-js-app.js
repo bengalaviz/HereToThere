@@ -27,6 +27,7 @@ var m_to_km = 1000;
 var km_or_mi = 0;
 var distance_conversion = 0;
 var distance_conversion_label = '';
+var refresh_minutes = 0;
 
 var maxTriesForSendingAppMessage = 3;
 var numTriesStart = 0;
@@ -98,7 +99,6 @@ function fetchHereToThere(latitude, longitude){
 		'&waypoint1=geo!' + dest_coords +
 		'&mode=fastest;car;traffic:enabled' + 
 		'&representation=overview&routeattributes=summary'
-	console.log(apicall);
 	req.open('GET', apicall);
 	req.onload = function(e){
 		if (req.readyState == 4){
@@ -127,16 +127,11 @@ function fetchHereToThere(latitude, longitude){
 						var traffic_hours = Math.floor(traffic_time/60);
 						var traffic_minutes = traffic_time % 60;
 					
-						console.log(distance + " | " + 
-							traffic_hours + " | " +
-							traffic_minutes + " | " +
-							base_time + " | " +
-							travel_time);
-						
 						if (traffic_hours == 0){
 							traffic_hours = "";
 						}
 						var returnData = {traveltime:true,
+							refresh_minutes:refresh_minutes * 60000,
 							location_name:"To " + location_name + " w/ Traffic",
 							traffic_time_minutes:traffic_minutes + "",
 							traffic_time_hours:traffic_hours + "",
@@ -144,7 +139,6 @@ function fetchHereToThere(latitude, longitude){
 							distance_conversion:distance_conversion_label,
 							routing_type:routing_type.capitalize(),
 							transport_mode:transport_mode.capitalize()};
-						console.log(JSON.stringify(returnData));
 						numTriesStart = 0;
 						sendAppMessage(returnData, numTriesStart);
 					}
@@ -164,7 +158,6 @@ function fetchHereToThere(latitude, longitude){
 }
 
 function sendAppMessage(message, numTries){
-	console.log('sendAppMessage. Tries : ' + numTries + ' of ' + maxTriesForSendingAppMessage);
 	if (numTries < maxTriesForSendingAppMessage){
 		numTries++;
 		Pebble.sendAppMessage(
@@ -212,7 +205,9 @@ function getLocationValue(item){
 
 Pebble.addEventListener("ready", function() {
 	console.log("Ready Event");
-        
+    
+    refresh_minutes = getLocationValue("rm");
+    
     l1_text = getLocationValue("l1_text");
     l1_coords = getLocationValue("l1_coords");
     l1_type = getLocationValue("l1_type");
@@ -242,51 +237,45 @@ Pebble.addEventListener("ready", function() {
 Pebble.addEventListener("appmessage", function(e){
 	pullType = e.payload.query_type;
 	
-	console.log("Pull Type : " + pullType);
-	
 	if (pullType == 0){
-		console.log("getting location");
 		getAllLocations();
 	}else if (pullType == 1){
-		console.log("getting location 1 stats");
 		destination = 1;
 		window.navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
 	}else if (pullType == 2){
-		console.log("getting location 2 stats");
 		destination = 2;
 		window.navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);	
 	}else if (pullType == 3){
-		console.log("getting location 3 stats");
 		destination = 3;
 		window.navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
 	}else if (pullType == 4){
-		console.log("getting location 4 stats");
 		destination = 4;
 		window.navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
 	}else if (pullType == 5){
-		console.log("getting location 5 stats");
 		destination = 5;
 		window.navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
 	}
 });
 
 Pebble.addEventListener("showConfiguration", function(e){
-	var settingsURI = "du=" + km_or_mi +
+	var settingsURI = "du=" + encodeURIComponent(km_or_mi) +
+		"&rm=" + encodeURIComponent(refresh_minutes) + 
 		"&l1=" + encodeURIComponent(l1_text + "|" + l1_coords) +
 		"&l2=" + encodeURIComponent(l2_text + "|" + l2_coords) +
 		"&l3=" + encodeURIComponent(l3_text + "|" + l3_coords) +
 		"&l4=" + encodeURIComponent(l4_text + "|" + l4_coords) +
 		"&l5=" + encodeURIComponent(l5_text + "|" + l5_coords);
-	console.log(settingsURI);
 	Pebble.openURL("http://bengalaviz.com/pebble/pebble-heretothere.php?" + settingsURI);
 });
 
 Pebble.addEventListener("webviewclosed", function(e){
-	if (e.response != null){
+	if (e.response != null && e.response != ''){
 		var config = JSON.parse(e.response);
 		
 		km_or_mi = config["du"];
 		localStorage.setItem("km_or_mi",km_or_mi);
+		refresh_minutes = config["rm"];
+		localStorage.setItem("rm", refresh_minutes);
 		l1_text = config["l1_name"];
 		localStorage.setItem("l1_text",l1_text);
 		l1_coords = config["l1_coords"];

@@ -23,6 +23,8 @@ static TextLayer *tt_tm_label_layer;
 static TextLayer *tt_location_layer;
 static int location_num;
 static int tuplet_count;
+static int refresh_minutes;
+static AppTimer *timer;
 
 static void get_time_to_location(void){
 	tuplet_count = 0;
@@ -44,9 +46,35 @@ static void splash_show(){
 	layer_add_child(window_get_root_layer(traveltime_window), (Layer *)refresh_bitmap_layer);
 }
 
+static void clear_text(){
+	text_layer_set_text(tt_location_layer, "");
+	text_layer_set_text(tt_hours_layer, "");
+	text_layer_set_text(tt_hours_label_layer, "");
+	text_layer_set_text(tt_minutes_layer, "");
+	text_layer_set_text(tt_minutes_label_layer, "");
+	text_layer_set_text(tt_distance_layer, "");
+	text_layer_set_text(tt_distance_label_layer, "");
+	text_layer_set_text(tt_dc_layer, "");
+	text_layer_set_text(tt_rt_layer, "");
+	text_layer_set_text(tt_routing_label_layer, "");
+	text_layer_set_text(tt_tm_layer, "");
+	text_layer_set_text(tt_tm_label_layer, "");
+}
+
+static void timer_callback(void *data) {
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "Timer called");
+	vibes_short_pulse();
+	clear_text();
+	splash_show();
+	get_time_to_location();
+}
+
 static void splash_hide(){
 	bitmap_layer_destroy(refresh_bitmap_layer);
 	gbitmap_destroy(res_refresh);
+	if (refresh_minutes > 0){
+		timer = app_timer_register(refresh_minutes, timer_callback, NULL);
+	}
 }
 
 void traveltime_out_sent_handler(DictionaryIterator *sent){
@@ -64,6 +92,7 @@ void traveltime_in_received_handler(DictionaryIterator *iter){
 	Tuple *distance_conversion = dict_find(iter, DISTANCE_CONVERSION_KEY);
 	Tuple *routing_type = dict_find(iter, ROUTING_TYPE_KEY);
 	Tuple *transport_mode = dict_find(iter, TRANSPORT_MODE_KEY);
+	Tuple *refresh_min = dict_find(iter, REFRESH_MINUTES_KEY);
 	
 	if (location_name){
 		tuplet_count++;
@@ -72,8 +101,12 @@ void traveltime_in_received_handler(DictionaryIterator *iter){
 	
 	if (traffic_time_hours){
 		tuplet_count++;
-		text_layer_set_text(tt_hours_layer, traffic_time_hours->value->cstring);
-		text_layer_set_text(tt_hours_label_layer, "hrs");
+		if (strcmp(traffic_time_hours->value->cstring, "") == 0){
+			//Don't print the hrs label
+		}else{
+			text_layer_set_text(tt_hours_layer, traffic_time_hours->value->cstring);
+			text_layer_set_text(tt_hours_label_layer, "hrs");
+		}
 	}
 	
 	if (traffic_time_minutes){
@@ -105,12 +138,19 @@ void traveltime_in_received_handler(DictionaryIterator *iter){
 		text_layer_set_text(tt_tm_label_layer, "Transport Mode :");
 	}
 	
-	if (tuplet_count > 6){
+	if (refresh_min){
+		tuplet_count++;
+		refresh_minutes = refresh_min->value->int32;
+	}
+	
+	if (tuplet_count > 7){
 		splash_hide();
 	}
 }
 
 static void select_click_handler(ClickRecognizerRef recognizer, Window *window){
+	clear_text();
+	splash_show();
 	get_time_to_location();
 }
 
@@ -143,6 +183,7 @@ static void window_load(Window *window){
   	// tt_minutes_layer
   	tt_minutes_layer = text_layer_create(GRect(75, 25, 42, 34));
   	text_layer_set_background_color(tt_minutes_layer, GColorClear);
+  	text_layer_set_text_alignment(tt_minutes_layer, GTextAlignmentRight);
   	text_layer_set_font(tt_minutes_layer, s_res_bitham_34_medium_numbers);
   	layer_add_child(window_layer, (Layer *)tt_minutes_layer);
   
@@ -201,7 +242,6 @@ static void window_load(Window *window){
   	// tt_location_layer
   	tt_location_layer = text_layer_create(GRect(1, 1, 140, 20));
   	text_layer_set_background_color(tt_location_layer, GColorClear);
-  	//text_layer_set_text(tt_location_layer, "Home");
   	text_layer_set_text_alignment(tt_location_layer, GTextAlignmentLeft);
   	text_layer_set_font(tt_location_layer, s_res_gothic_18);
   	layer_add_child(window_layer, (Layer *)tt_location_layer);
@@ -223,6 +263,9 @@ static void window_unload(Window *window){
   	text_layer_destroy(tt_tm_layer);
   	text_layer_destroy(tt_tm_label_layer);
   	text_layer_destroy(tt_location_layer);
+  	if (timer != NULL){
+  		app_timer_cancel(timer);
+  	}
 }
 
 void traveltime_show(int location){

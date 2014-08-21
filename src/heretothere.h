@@ -32,3 +32,4 @@ extern int TRANSPORT_MODE_KEY;
 
 extern int LOCATIONS_KEY;
 extern int TRAVELTIME_KEY;
+extern int REFRESH_MINUTES_KEY;
