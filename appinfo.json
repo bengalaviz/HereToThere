@@ -41,7 +41,8 @@
     "routing_type" : 56,
     "transport_mode" : 57,
     "locations" : 60,
-    "traveltime" : 61
+    "traveltime" : 61,
+    "refresh_minutes" : 62
   },
   "resources": {
     "media": [

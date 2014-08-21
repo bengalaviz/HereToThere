@@ -37,6 +37,7 @@ int TRANSPORT_MODE_KEY = 57;
 
 int LOCATIONS_KEY = 60;
 int TRAVELTIME_KEY = 61;
+int REFRESH_MINUTES_KEY = 62;
 
 static void init(void){
 	appmessage_init();
