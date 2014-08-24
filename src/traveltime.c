@@ -82,6 +82,8 @@ void traveltime_out_sent_handler(DictionaryIterator *sent){
 
 void traveltime_out_failed_handler(DictionaryIterator *falied, AppMessageResult reason){
 	APP_LOG(APP_LOG_LEVEL_INFO, "Failed to send AppMessage to Pebble");
+	splash_hide();
+	text_layer_set_text(tt_location_layer,"Not connected to phone");
 }
 
 void traveltime_in_received_handler(DictionaryIterator *iter){
