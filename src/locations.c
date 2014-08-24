@@ -29,7 +29,7 @@ void locations_out_sent_handler(DictionaryIterator *sent){
 }
 
 void locations_out_failed_handler(DictionaryIterator *failed, AppMessageResult reason){
-	ld_array[0].location_name = "Not connected to phone";
+	ld_array[0].location_name = "Not connected";
 	layer_mark_dirty(menu_layer_get_layer(location_layer));
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "Failed to send AppMessage to Pebble.");
 }

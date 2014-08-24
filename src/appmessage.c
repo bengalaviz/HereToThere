@@ -4,6 +4,8 @@
 #include "locations.h"
 #include "traveltime.h"
 
+static int query_type;
+
 static void in_received_handler(DictionaryIterator *iter, void *context);
 static void in_dropped_handler(AppMessageResult reason, void *context);
 static void out_sent_handler(DictionaryIterator *sent, void *context);
@@ -44,5 +46,16 @@ static void out_failed_handler(DictionaryIterator *failed, AppMessageResult reas
 		locations_out_failed_handler(failed, reason);
 	}else if (dict_find(failed, TRAVELTIME_KEY)) {
 		traveltime_out_failed_handler(failed, reason);
+	}else if (dict_find(failed, QUERY_TYPE_KEY)){
+		Tuple *queryType = dict_find(failed, QUERY_TYPE_KEY);
+		query_type = queryType->value->int32;
+		switch(query_type){
+			case 0:
+				locations_out_failed_handler(failed, reason);
+				break;
+			default:
+				traveltime_out_failed_handler(failed, reason);
+				break;
+		}
 	}
 }
