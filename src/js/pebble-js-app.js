@@ -351,12 +351,28 @@ Pebble.addEventListener("appmessage", function(e){
 
 Pebble.addEventListener("showConfiguration", function(e){
 	var settingsURI = "du=" + encodeURIComponent(km_or_mi) +
-		"&rm=" + encodeURIComponent(refresh_minutes) + 
-		"&l1=" + encodeURIComponent(l1_text + "|" + l1_coords + "|" + l1_type + "|" + l1_trans_mode) +
-		"&l2=" + encodeURIComponent(l2_text + "|" + l2_coords + "|" + l2_type + "|" + l2_trans_mode) +
-		"&l3=" + encodeURIComponent(l3_text + "|" + l3_coords + "|" + l3_type + "|" + l3_trans_mode) +
-		"&l4=" + encodeURIComponent(l4_text + "|" + l4_coords + "|" + l4_type + "|" + l4_trans_mode) +
-		"&l5=" + encodeURIComponent(l5_text + "|" + l5_coords + "|" + l5_type + "|" + l5_trans_mode);
+		"&rm=" + encodeURIComponent(refresh_minutes);
+	
+	if (l1_text != ""){
+		settingsURI+="&l1=" + encodeURIComponent(l1_text + "|" + l1_coords + "|" + l1_type + "|" + l1_trans_mode);
+	}
+	
+	if (l2_text != ""){
+		settingsURI+="&l2=" + encodeURIComponent(l2_text + "|" + l2_coords + "|" + l2_type + "|" + l2_trans_mode);
+	}
+	
+	if (l3_text != ""){
+		settingsURI+="&l3=" + encodeURIComponent(l3_text + "|" + l3_coords + "|" + l3_type + "|" + l3_trans_mode);
+	}
+	
+	if (l4_text != ""){
+		settingsURI+="&l4=" + encodeURIComponent(l4_text + "|" + l4_coords + "|" + l4_type + "|" + l4_trans_mode);
+	}
+	
+	if (l5_text != ""){
+		settingsURI+="&l5=" + encodeURIComponent(l5_text + "|" + l5_coords + "|" + l5_type + "|" + l5_trans_mode);
+	}
+	
 	Pebble.openURL("http://bengalaviz.com/pebble/pebble-heretothere.php?" + settingsURI);
 });
 
