@@ -13,6 +13,7 @@ static TextLayer *tt_hours_layer;
 static TextLayer *tt_hours_label_layer;
 static TextLayer *tt_minutes_layer;
 static TextLayer *tt_minutes_label_layer;
+static Layer *line_layer;
 static TextLayer *tt_distance_label_layer;
 static TextLayer *tt_distance_layer;
 static TextLayer *tt_routing_label_layer;
@@ -21,6 +22,7 @@ static TextLayer *tt_rt_layer;
 static TextLayer *tt_tm_layer;
 static TextLayer *tt_tm_label_layer;
 static TextLayer *tt_location_layer;
+static InverterLayer *tt_inverterlayer;
 static int location_num;
 static int tuplet_count;
 static int refresh_minutes;
@@ -62,7 +64,6 @@ static void clear_text(){
 }
 
 static void timer_callback(void *data) {
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "Timer called");
 	vibes_short_pulse();
 	clear_text();
 	splash_show();
@@ -160,6 +161,13 @@ static void tt_window_config_provider(void *context){
 	window_single_click_subscribe(BUTTON_ID_SELECT, (ClickHandler) select_click_handler);
 }
 
+static void update_line_layer_callback(Layer *layer, GContext* ctx){
+	graphics_draw_line(ctx, GPoint(0, 22), GPoint(144, 22));
+	graphics_draw_line(ctx, GPoint(0, 63), GPoint(144, 63));
+	graphics_draw_line(ctx, GPoint(0, 93), GPoint(144, 93));
+	graphics_draw_line(ctx, GPoint(0, 122), GPoint(144, 122));
+}
+
 static void window_load(Window *window){
 	window_set_click_config_provider(window, (ClickConfigProvider)tt_window_config_provider);
 	Layer *window_layer = window_get_root_layer(traveltime_window);
@@ -196,13 +204,13 @@ static void window_load(Window *window){
   	layer_add_child(window_layer, (Layer *)tt_minutes_label_layer);
   
   	// tt_distance_label_layer
-  	tt_distance_label_layer = text_layer_create(GRect(5, 64, 138, 18));
+  	tt_distance_label_layer = text_layer_create(GRect(5, 62, 138, 18));
   	text_layer_set_background_color(tt_distance_label_layer, GColorClear);
   	text_layer_set_font(tt_distance_label_layer, s_res_gothic_14_bold);
   	layer_add_child(window_layer, (Layer *)tt_distance_label_layer);
   
   	// tt_distance_layer
-  	tt_distance_layer = text_layer_create(GRect(6, 75, 115, 18));
+  	tt_distance_layer = text_layer_create(GRect(6, 72, 115, 18));
   	text_layer_set_background_color(tt_distance_layer, GColorClear);
   	text_layer_set_text_alignment(tt_distance_layer, GTextAlignmentRight);
   	text_layer_set_font(tt_distance_layer, s_res_gothic_18);
@@ -215,14 +223,14 @@ static void window_load(Window *window){
   	layer_add_child(window_layer, (Layer *)tt_routing_label_layer);
   
   	// tt_dc_layer
-  	tt_dc_layer = text_layer_create(GRect(121, 76, 19, 18));
+  	tt_dc_layer = text_layer_create(GRect(121, 72, 19, 18));
   	text_layer_set_background_color(tt_dc_layer, GColorClear);
   	text_layer_set_text_alignment(tt_dc_layer, GTextAlignmentRight);
   	text_layer_set_font(tt_dc_layer, s_res_gothic_18);
   	layer_add_child(window_layer, (Layer *)tt_dc_layer);
   
   	// tt_rt_layer
-  	tt_rt_layer = text_layer_create(GRect(5, 103, 135, 20));
+  	tt_rt_layer = text_layer_create(GRect(5, 101, 135, 20));
   	text_layer_set_background_color(tt_rt_layer, GColorClear);
   	text_layer_set_text_alignment(tt_rt_layer, GTextAlignmentRight);
   	text_layer_set_font(tt_rt_layer, s_res_gothic_18);
@@ -236,17 +244,26 @@ static void window_load(Window *window){
   	layer_add_child(window_layer, (Layer *)tt_tm_layer);
   
   	// tt_tm_label_layer
-  	tt_tm_label_layer = text_layer_create(GRect(5, 119, 138, 20));
+  	tt_tm_label_layer = text_layer_create(GRect(5, 120, 138, 20));
   	text_layer_set_background_color(tt_tm_label_layer, GColorClear);
   	text_layer_set_font(tt_tm_label_layer, s_res_gothic_14_bold);
   	layer_add_child(window_layer, (Layer *)tt_tm_label_layer);
   
   	// tt_location_layer
-  	tt_location_layer = text_layer_create(GRect(1, 1, 140, 20));
+  	tt_location_layer = text_layer_create(GRect(1, -2, 140, 20));
   	text_layer_set_background_color(tt_location_layer, GColorClear);
   	text_layer_set_text_alignment(tt_location_layer, GTextAlignmentLeft);
   	text_layer_set_font(tt_location_layer, s_res_gothic_18);
   	layer_add_child(window_layer, (Layer *)tt_location_layer);
+  	
+  	//tt_invert_layer
+  	tt_inverterlayer = inverter_layer_create(GRect(0, 1, 144, 20));
+  	layer_add_child(window_layer, (Layer *)tt_inverterlayer);
+	
+	// line_layer
+  	line_layer = layer_create(GRect(0, 0, 144, 152));
+  	layer_set_update_proc(line_layer, update_line_layer_callback);
+  	layer_add_child(window_layer, (Layer *)line_layer);
 	
 	splash_show();
 	get_time_to_location();
@@ -265,6 +282,8 @@ static void window_unload(Window *window){
   	text_layer_destroy(tt_tm_layer);
   	text_layer_destroy(tt_tm_label_layer);
   	text_layer_destroy(tt_location_layer);
+  	inverter_layer_destroy(tt_inverterlayer);
+  	layer_destroy(line_layer);
   	if (timer != NULL){
   		app_timer_cancel(timer);
   	}
