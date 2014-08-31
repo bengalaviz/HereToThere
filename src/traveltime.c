@@ -64,9 +64,6 @@ static void clear_text(){
 }
 
 static void timer_callback(void *data) {
-	if (timer != NULL){
-  		app_timer_cancel(timer);
-  	}
 	vibes_short_pulse();
 	clear_text();
 	splash_show();
@@ -155,6 +152,9 @@ void traveltime_in_received_handler(DictionaryIterator *iter){
 }
 
 static void select_click_handler(ClickRecognizerRef recognizer, Window *window){
+	if (timer != NULL){
+  		app_timer_cancel(timer);
+  	}
 	clear_text();
 	splash_show();
 	get_time_to_location();
