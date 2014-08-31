@@ -64,6 +64,9 @@ static void clear_text(){
 }
 
 static void timer_callback(void *data) {
+	if (timer != NULL){
+  		app_timer_cancel(timer);
+  	}
 	vibes_short_pulse();
 	clear_text();
 	splash_show();
