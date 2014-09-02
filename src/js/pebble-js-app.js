@@ -104,8 +104,8 @@ function getAllLocations(){
 
 function fetchHereToThere(latitude, longitude){
 	var response;
-	var app_id='INPUT-YOUR-APP-ID';
-	var app_code='INPUT-YOUR-APP-CODE';
+	var app_id='***REMOVED***';
+	var app_code='***REMOVED***';
 	var req = new XMLHttpRequest();
 	
 	switch (destination){
