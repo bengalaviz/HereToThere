@@ -298,6 +298,7 @@ function getLocationValue(item, default_value){
 Pebble.addEventListener("ready", function() {
 	console.log("Ready Event");
     
+    km_or_mi = getLocationValue("km_or_mi",0);
     refresh_minutes = getLocationValue("rm");
     
     l1_text = getLocationValue("l1_text","");
@@ -373,7 +374,7 @@ Pebble.addEventListener("showConfiguration", function(e){
 		settingsURI+="&l5=" + encodeURIComponent(l5_text + "|" + l5_coords + "|" + l5_type + "|" + l5_trans_mode);
 	}
 	
-	Pebble.openURL("http://bengalaviz.com/pebble/pebble-heretothere.php?v=0.7&" + settingsURI);
+	Pebble.openURL("http://bengalaviz.com/pebble/pebble-heretothere.php?v=0.8&" + settingsURI);
 });
 
 Pebble.addEventListener("webviewclosed", function(e){
