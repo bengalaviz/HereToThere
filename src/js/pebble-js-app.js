@@ -372,8 +372,6 @@ Pebble.addEventListener("showConfiguration", function(e){
 	
 	if (l5_text != ""){
 		settingsURI+="&l5=" + encodeURIComponent(l5_text + "|" + l5_coords + "|" + l5_type + "|" + l5_trans_mode);
-<<<<<<< HEAD
-=======
 	}
 	
 	Pebble.openURL("http://bengalaviz.com/pebble/pebble-heretothere.php?v=0.8&" + settingsURI);
@@ -431,7 +429,6 @@ Pebble.addEventListener("webviewclosed", function(e){
 		localStorage.setItem("l5_type", l5_type);
 		l5_trans_mode = config["l5_tm"];
 		localStorage.setItem("l5_trans_mode", l5_trans_mode);
->>>>>>> c4a9e7c1a8a0d1e55e1fbb797e5042a339760578
 	}
 	
 	Pebble.openURL("http://bengalaviz.com/pebble/pebble-heretothere.php?v=0.8&" + settingsURI);
