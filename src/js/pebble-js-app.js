@@ -104,8 +104,8 @@ function getAllLocations(){
 
 function fetchHereToThere(latitude, longitude){
 	var response;
-	var app_id='';
-	var app_code='';
+	var app_id='***REMOVED***';
+	var app_code='***REMOVED***';
 	var req = new XMLHttpRequest();
 	
 	switch (destination){
@@ -430,6 +430,4 @@ Pebble.addEventListener("webviewclosed", function(e){
 		l5_trans_mode = config["l5_tm"];
 		localStorage.setItem("l5_trans_mode", l5_trans_mode);
 	}
-	
-	Pebble.openURL("http://bengalaviz.com/pebble/pebble-heretothere.php?v=0.8&" + settingsURI);
 });
