@@ -104,8 +104,8 @@ function getAllLocations(){
 
 function fetchHereToThere(latitude, longitude){
 	var response;
-	var app_id='***REMOVED***';
-	var app_code='***REMOVED***';
+	var app_id='';
+	var app_code='';
 	var req = new XMLHttpRequest();
 	
 	switch (destination){
@@ -432,59 +432,4 @@ Pebble.addEventListener("webviewclosed", function(e){
 	}
 	
 	Pebble.openURL("http://bengalaviz.com/pebble/pebble-heretothere.php?v=0.8&" + settingsURI);
-});
-
-Pebble.addEventListener("webviewclosed", function(e){
-	if (e.response != null && e.response != ''){
-		var config = JSON.parse(e.response);
-		km_or_mi = config["du"];
-		localStorage.setItem("km_or_mi",km_or_mi);
-		refresh_minutes = config["rm"];
-		localStorage.setItem("rm", refresh_minutes);
-		
-		l1_text = config["l1_name"];
-		localStorage.setItem("l1_text",l1_text);
-		l1_coords = config["l1_coords"];
-		localStorage.setItem("l1_coords",l1_coords);
-		l1_type = config["l1_rt"];
-		localStorage.setItem("l1_type", l1_type);
-		l1_trans_mode = config["l1_tm"];
-		localStorage.setItem("l1_trans_mode", l1_trans_mode);
-		
-		l2_text = config["l2_name"];
-		localStorage.setItem("l2_text",l2_text);
-		l2_coords = config["l2_coords"];
-		localStorage.setItem("l2_coords",l2_coords);
-		l2_type = config["l2_rt"];
-		localStorage.setItem("l2_type", l2_type);
-		l2_trans_mode = config["l2_tm"];
-		localStorage.setItem("l2_trans_mode", l2_trans_mode);
-		
-		l3_text = config["l3_name"];
-		localStorage.setItem("l3_text",l3_text);
-		l3_coords = config["l3_coords"];
-		localStorage.setItem("l3_coords",l3_coords);
-		l3_type = config["l3_rt"];
-		localStorage.setItem("l3_type", l3_type);
-		l3_trans_mode = config["l3_tm"];
-		localStorage.setItem("l3_trans_mode", l3_trans_mode);
-		
-		l4_text = config["l4_name"];
-		localStorage.setItem("l4_text",l4_text);
-		l4_coords = config["l4_coords"];
-		localStorage.setItem("l4_coords",l4_coords);
-		l4_type = config["l4_rt"];
-		localStorage.setItem("l4_type", l4_type);
-		l4_trans_mode = config["l4_tm"];
-		localStorage.setItem("l4_trans_mode", l4_trans_mode);
-		
-		l5_text = config["l5_name"];
-		localStorage.setItem("l5_text",l5_text);
-		l5_coords = config["l5_coords"];
-		localStorage.setItem("l5_coords",l5_coords);
-		l5_type = config["l5_rt"];
-		localStorage.setItem("l5_type", l5_type);
-		l5_trans_mode = config["l5_tm"];
-		localStorage.setItem("l5_trans_mode", l5_trans_mode);
-	}
 });
