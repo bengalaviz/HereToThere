@@ -374,7 +374,7 @@ Pebble.addEventListener("showConfiguration", function(e){
 		settingsURI+="&l5=" + encodeURIComponent(l5_text + "|" + l5_coords + "|" + l5_type + "|" + l5_trans_mode);
 	}
 	
-	Pebble.openURL("http://bengalaviz.com/pebble/pebble-heretothere.php?v=0.8&" + settingsURI);
+	Pebble.openURL("http://bengalaviz.com/pebble/pebble-heretothere.php?v=1.0&" + settingsURI);
 });
 
 Pebble.addEventListener("webviewclosed", function(e){
