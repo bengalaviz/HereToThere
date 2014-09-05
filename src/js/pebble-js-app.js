@@ -177,7 +177,7 @@ function fetchHereToThere(latitude, longitude){
 						for (var i=0;i<trafficResults.length;i++){
 							var routeInfo = trafficResults[i];
 							location_name = "To " + location_name
-							if (km_or_mi == 0){
+							if (parseInt(km_or_mi) == 0){
 								distance_conversion = m_to_mi;
 								distance_conversion_label = "mi";
 							}else{
